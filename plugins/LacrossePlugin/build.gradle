@@ -1,25 +1,42 @@
 plugins {
     id 'java'
+    id 'io.typecraft.gradlesource.spigot' version '1.0.0'
 }
 
-group 'org.example'
+group 'org.mlp'
 version '0.1'
 
 repositories {
     mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url = 'https://oss.sonatype.org/content/repositories/central' }
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    mavenLocal()
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+//    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+    // Import from /home/.m2/repos/org/spigotmc/spigot
+    // C:\Users\dabom\.m2\repository\org\spigotmc\spigot\1.17.1-R0.1-SNAPSHOT
+    compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT:remapped-mojang'
+    // compileOnly group: 'org.spigotmc.spigot', name:'1.17.1-R0.1-SNAPSHOT', version: 'spigot-1.17.1-R0.1-SNAPSHOT-remapped-mojang'
+    // compileOnly 'org.spigotmc:spigot:1.17-R0.1-SNAPSHOT'
+
+}
+
+//apply plugin: 'io.typecraft.gradlesource.spigot'
+
+spigotRemap {
+    spigotVersion = '1.17.1'
+    sourceJarTask = tasks.jar // or `tasks.shadowJar` if you use Shadow plugin.
 }
 
 task copyJar(type: Copy) {
-    from "build/libs/MinecraftLacrossePlugin-0.1.jar" // copies output of file produced from jar task
-    into '..'
+    from 'build/libs/' // copies output of file produced from jar task
+    include 'MinecraftLacrossePlugin-0.1-spigot-jar.jar'
+    destinationDir file('../')
+    rename 'MinecraftLacrossePlugin-0.1-spigot-jar.jar', 'MinecraftLacrossePlugin-0.1.jar'
 }
 
-jar.finalizedBy copyJar
+assemble.finalizedBy copyJar
